@@ -106,9 +106,21 @@ const signIn = async (req, res) => {
   }
 };
 
+const logout = async (req,res) => {
+    try{
+        res.cookie("jwt", "", {maxAge: 0});
+        res.status(200).json({message: "Logged out Successfully."});
+    }catch (e) {
+        res.status(500).send({
+            message: "Internal Server Error While logged out"
+        });
+    }
+}
+
 const AuthController = {
   signUp,
   signIn,
+  logout,
 };
 
 module.exports = AuthController;
