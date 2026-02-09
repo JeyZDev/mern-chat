@@ -85,6 +85,13 @@ const signIn = async (req, res) => {
         });
       }
 
+      res.cookie("jwt", token, {
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: "strict",
+        secure: node_mode === "production",
+      });
+
       return res.send({
         message: "Logged in successfully",
         id: userDoc._id,
