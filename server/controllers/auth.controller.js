@@ -6,13 +6,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const node_mode = process.env.NODE_MODE;
 
 const signUp = async (req, res) => {
-  const { fullName, email, password, confirmPassword, profilePic } = req.body;
-  if (!fullName || !email || !password || !confirmPassword) {
+  const { fullName, email, password, profilePic } = req.body;
+  if (!fullName || !email || !password ) {
     return res.status(400).send({ message: "All fields is required!" });
-  }
-
-  if (password !== confirmPassword) {
-    return res.status(400).send({ message: "Password don't match." });
   }
 
   const existingUser = await User.findOne({ email });

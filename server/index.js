@@ -4,6 +4,7 @@ require("dotenv").config();
 const mongoose = require('mongoose');
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routers/auth.router");
+const userRouter = require("./routers/user.router");
 
 const FRONT_END_URL = process.env.FRONT_END_URL;
 const PORT = process.env.PORT;
@@ -42,6 +43,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/users", userRouter);
 
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
