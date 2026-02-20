@@ -19,7 +19,7 @@ const updateProfile = async(req, res) => {
                 return res.status(500).send({message: "Error while uploading profile picture."});
             }
 
-            return res.send({message: "User profile updated successfully."});
+            return res.send({message: "User profile updated successfully.", user: updatedUser});
         }else if(fullName) {
             const updatedUser = await User.findByIdAndUpdate(userId, {fullName}, {new: true});
 
@@ -27,7 +27,7 @@ const updateProfile = async(req, res) => {
                 return res.status(500).send({message: "Error while uploading profile picture."});
             }
 
-            return res.send({message: "User profile updated successfully."});
+            return res.send({message: "User profile updated successfully.", user: updatedUser});
         }else if (profilePic) {
             const uploadResponse = await cloudinary.uploader.upload(profilePic);
             if(!uploadResponse){
@@ -40,7 +40,7 @@ const updateProfile = async(req, res) => {
                 return res.status(500).send({message: "Error while uploading profile picture."});
             }
 
-            return res.send({message: "User profile updated successfully."});
+            return res.send({message: "User profile updated successfully.", user: updatedUser});
         }else {
         }
     }catch(e) {

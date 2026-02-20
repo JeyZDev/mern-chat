@@ -1,53 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Settings, User, LogOut, Users, MessageSquare } from "lucide-react";
-import AuthService from "../services/auth.service";
-import { useNavigate } from "react-router";
+import {  Users, MessageSquare } from "lucide-react";
+import Navbar from "../components/Navbar";
 
 const ChatPage = () => {
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    // เช็ค Auth เมื่อโหลดหน้า
-    const checkUser = async () => {
-      try {
-        const data = await AuthService.checkAuth();
-        setUser(data);
-      } catch (err) {
-        navigate("/login");
-      }
-    };
-    checkUser();
-  }, []);
-
-  const handleLogout = async () => {
-    await AuthService.logout();
-    localStorage.removeItem("chat-user");
-    navigate("/login");
-  };
 
   return (
     <div className="h-screen flex flex-col bg-[#0f171e] text-slate-300">
-      <header className="h-16 border-b border-slate-800 flex items-center justify-between px-4">
-        <div className="flex items-center gap-2 font-bold text-white">
-          <MessageSquare className="text-orange-400" /> <span>SE Chat</span>
-        </div>
-        <div className="flex gap-2">
-          <button className="btn btn-ghost btn-sm gap-2">
-            <Settings size={16} /> Settings
-          </button>
-          <button className="btn btn-ghost btn-sm gap-2">
-            <User size={16} /> Profile
-          </button>
-          <button
-            onClick={handleLogout}
-            className="btn btn-ghost btn-sm gap-2 text-red-400"
-          >
-            <LogOut size={16} /> Logout
-          </button>
-        </div>
-      </header>
-
+      <Navbar />
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar */}
         <aside className="w-72 border-r border-slate-800 p-4">

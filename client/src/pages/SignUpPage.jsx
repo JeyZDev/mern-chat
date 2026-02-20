@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Settings, MessageSquare } from "lucide-react";
+import { Eye, EyeOff, Settings, MessageSquare, Loader2 } from "lucide-react";
 import { useNavigate, Link } from "react-router";
 import Swal from "sweetalert2";
 import AuthService from "../services/auth.service";
+import { useAuthStore } from "../store/useAuthStore";
+import toast from "react-hot-toast";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const {signUp, isSigningUp} = useAuthStore();
 
   // สร้าง State สำหรับเก็บข้อมูลจากฟอร์ม
   const [formData, setFormData] = useState({
@@ -16,38 +18,21 @@ const SignUpPage = () => {
     password: "",
   });
 
+    const validateForm = () => {
+    if(!formData.fullName.trim()) return toast.error("Full name is required");
+    if(!formData.email.trim()) return toast.error("Email is required");
+    if(!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid Email Format");
+    if (!formData.password.trim()) return toast.error("Password is required");
+    if(formData.password.length < 6) return toast.error("Password must be at least 6 characters");
+    return true;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
-    try {
-      const response = await AuthService.register(formData);
-
-      // แสดง Alert เมื่อสำเร็จ
-      await Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: "Account created successfully. Please sign in.",
-        background: "#1a232e",
-        color: "#fff",
-        confirmButtonColor: "#ff8a65",
-      });
-
-      navigate("/login");
-    } catch (error) {
-      // แสดง Alert เมื่อเกิดข้อผิดพลาด
-      Swal.fire({
-        icon: "error",
-        title: "Registration Failed",
-        text:
-          error.response?.data?.message ||
-          "Something went wrong. Please try again.",
-        background: "#1a232e",
-        color: "#fff",
-        confirmButtonColor: "#ef4444",
-      });
-    } finally {
-      setLoading(false);
+    const success = validateForm();
+    if(success == true) {
+      await signUp(formData);
+      navigate("/");
     }
   };
 
@@ -149,12 +134,11 @@ const SignUpPage = () => {
 
               <button
                 type="submit"
-                disabled={loading}
-                className={`btn w-full bg-[#ff8a65] hover:bg-[#ff7b52] text-[#0f171e] border-none font-bold text-lg normal-case mt-4 ${
-                  loading ? "loading" : ""
-                }`}
+                disabled={isSigningUp}
+                className="btn w-full bg-[#ff8a65] hover:bg-[#ff7b52] disabled:bg-[#ff8a65]/70 disabled:cursor-not-allowed text-[#0f171e] border-none font-bold text-lg normal-case mt-4 flex items-center justify-center gap-2"
               >
-                {loading ? "Creating Account..." : "Create Account"}
+                {isSigningUp && <Loader2 className="w-5 h-5 animate-spin" />}
+                {isSigningUp ? "Creating Account..." : "Create Account"}
               </button>
             </form>
 

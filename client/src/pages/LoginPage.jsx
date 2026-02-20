@@ -1,25 +1,17 @@
 import React, { useState } from "react";
-import { Mail, Lock, Eye, Settings, MessageSquare } from "lucide-react";
-import AuthService from "../services/auth.service"
+import { Mail, Lock, Eye, Settings, MessageSquare, Loader2 } from "lucide-react";
 import { useNavigate, Link } from "react-router";
+import { useAuthStore } from "../store/useAuthStore";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { logIn, isLoggingIn } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      const user = await AuthService.login(formData);
-      localStorage.setItem("chat-user", JSON.stringify(user));
-      navigate("/chat");
-    } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
+    await logIn(formData);
+    navigate("/");
   };
 
   return (
@@ -87,11 +79,12 @@ const LoginPage = () => {
               </div>
 
               <button
-                className={`btn w-full bg-[#ff8a65] hover:bg-[#ff7b52] text-[#0f171e] border-none font-bold ${
-                  loading ? "loading" : ""
-                }`}
+                type="submit"
+                disabled={isLoggingIn}
+                className="btn w-full bg-[#ff8a65] hover:bg-[#ff7b52] disabled:bg-[#ff8a65]/70 disabled:cursor-not-allowed text-[#0f171e] border-none font-bold text-lg normal-case mt-4 flex items-center justify-center gap-2"
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {isLoggingIn && <Loader2 className="w-5 h-5 animate-spin" />}
+                {isLoggingIn ? "Logging in Account..." : "Logging in Account"}
               </button>
             </form>
 
