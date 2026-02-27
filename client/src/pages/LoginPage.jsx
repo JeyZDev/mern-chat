@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Mail, Lock, Eye, Settings, MessageSquare, Loader2 } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  Settings,
+  MessageSquare,
+  Loader2,
+} from "lucide-react";
 import { useNavigate, Link } from "react-router";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -90,7 +97,7 @@ const LoginPage = () => {
 
             <p className="text-slate-500 text-sm">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-orange-400 hover:underline">
+              <Link to="/register" className="text-orange-400 hover:underline">
                 Create account
               </Link>
             </p>

@@ -1,16 +1,17 @@
-const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const mongoose = require('mongoose');
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routers/auth.router");
 const userRouter = require("./routers/user.router");
+const messageRouter = require("./routers/message.router");
+const { server, app } = require("./lib/socket");
+const express = require("express");
 
 const FRONT_END_URL = process.env.FRONT_END_URL;
 const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 
-const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -44,7 +45,8 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/message", messageRouter);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
 });
