@@ -7,14 +7,16 @@ import MessageInput from './MessageInput';
 import { UserCircle } from 'lucide-react';
 
 const ChatContainer = () => {
-  const { messages, getMessage, isMessageLoading, selectedUser } =
-    useChatStore();
+  const { messages, getMessage, isMessageLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
   const { authUser } = useAuthStore();
   const messageRef = useRef(null);
 
   useEffect(() => {
     getMessage(selectedUser._id);
-  }, [getMessage, selectedUser]);
+    subscribeToMessages();
+
+    return () => unsubscribeFromMessages();
+  }, [getMessage, selectedUser, subscribeToMessages, unsubscribeFromMessages]);
 
   useEffect(() => {
     if (messageRef.current && messages) {
@@ -43,8 +45,6 @@ const ChatContainer = () => {
           const myId = authUser._id;
 
           const isMine = senderId === myId;
-
-          console.log(message);
 
           return (
             <div
@@ -91,9 +91,9 @@ const ChatContainer = () => {
                     : "bg-[#1a232e] text-slate-200 border border-slate-800"
                 }`}
               >
-                {message.image && (
+                {message.file && (
                   <img
-                    src={message.image}
+                    src={message.file}
                     alt="Attachment"
                     className="sm:max-w-[200px] rounded-md mb-2"
                   />

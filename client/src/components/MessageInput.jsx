@@ -11,12 +11,21 @@ const MessageInput = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file.type.startsWith("image/"))
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
       return toast.error("Please select an image file");
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return toast.error("Image size must be less than 5MB");
+    }
 
     const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
+    reader.onload = () => {
+      setImagePreview(reader.result);
+    };
   };
 
   const removeImage = () => {
@@ -24,17 +33,23 @@ const MessageInput = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const [isSending, setIsSending] = useState(false);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
+    if (isSending) return;
 
     try {
-      await sendMessage({ text: text.trim(), image: imagePreview });
+      setIsSending(true);
+      await sendMessage({ text: text.trim(), file: imagePreview });
       setText("");
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       toast.error("Failed to send message");
+    } finally {
+      setIsSending(false);
     }
   };
 

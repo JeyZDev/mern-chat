@@ -1,6 +1,7 @@
 const Message = require("../models/message.model");
 const User = require("../models/user.model");
 const cloudinary = require("../configs/cloudinary");
+const { getReceiverSocketId, io } = require("../lib/socket");
 
 const getUsersForSidebar = async (req, res) => {
     try {
@@ -24,11 +25,11 @@ const sendMessage = async(req, res) => {
         const {text, file} = req.body;
         let fileUrl = "";
         if(file) {
-            const uploadReponse = await cloudinary.uploader.upload(file);
-            fileUrl = uploadReponse.secure_url;
+            const uploadResponse = await cloudinary.uploader.upload(file);
+            fileUrl = uploadResponse.secure_url;
         }
         // if(text === "" && file === "") {
-        //     return res.status(400).json({message: "Msaage is empty"})
+        //     return res.status(400).json({message: "Massage is empty"})
         // }
 
         const newMessage = new Message({
@@ -38,6 +39,12 @@ const sendMessage = async(req, res) => {
             recipient: recipientId
         })
         await newMessage.save();
+
+        // realtime chat
+        const receiverSocketId = getReceiverSocketId(recipientId);
+        if(receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage);
+        }
         res.status(200).json(newMessage);
     } catch (error) {
       res.status(500).send({ message: "Server error while send message" });
